@@ -55,32 +55,6 @@ public class Main {
         schedule.addAllDown();
         System.out.println("exit");
 
-
-        /*List<Schedule> population = generuj();
-        List<Schedule> subpopulation;
-        boolean ready = false;
-
-        while (shouldProceed()) {
-            subpopulation = select(population);
-            population.clear();
-            while (population.size() < 5 * kPopulationSize) {
-                Schedule[] parents = getParents(subpopulation);
-                Schedule schedule1 = parents[0];
-                Schedule schedule2 = parents[1];
-                if (shouldCross()) {
-                    schedule1 = cross(parents[0], parents[1]);
-                    schedule2 = cross(parents[1], parents[0]);
-                }
-                if (shouldMutate()) {
-                    schedule1 = mutate(schedule1);
-                    schedule2 = mutate(schedule2);
-                }
-                population.add(schedule1);
-                population.add(schedule2);
-            }
-        }
-
-        System.out.println("hehe");*/
     }
 
     private static void before() {
