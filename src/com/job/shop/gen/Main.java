@@ -2,6 +2,7 @@ package com.job.shop.gen;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Mewa on 2015-12-30.
@@ -14,22 +15,36 @@ public class Main {
     public static ArrayList<Task> originalTasks = new ArrayList<>();
     public static int minTime = 999999999;
     public static ArrayList<Integer> breaks = new ArrayList<>();
+    public static ArrayList<Schedule> schedules = new ArrayList<>();
 
-    static List<Schedule> generuj() {
-        return null;
+    static ArrayList<Schedule> generuj() {
+        ArrayList<Schedule> list = new ArrayList<>();
+        for (int i = 0; i < kPopulationSize; i++) {
+            ArrayList<Task> copyTasks = new ArrayList<>();
+            copyTasks.addAll(originalTasks);
+            Schedule schedule = new Schedule();
+            while (copyTasks.size() > 0) {
+                int random = new Random().nextInt(copyTasks.size());
+                schedule.addTask(copyTasks.get(random));
+                copyTasks.remove(random);
+            }
+            schedule.addAllDown();
+            list.add(schedule);
+        }
+        return list;
     }
 
     public static int nextBreak(int time) {
         for (int i = 1; i < breaks.size(); i++) {
-            if(time<breaks.get(i)){
-                if(time<breaks.get(i-1)) {
+            if (time < breaks.get(i)) {
+                if (time < breaks.get(i - 1)) {
                     return breaks.get(i - 1);
                 } else {
                     return breaks.get(i);
                 }
             }
         }
-        return minTime*2;
+        return minTime * 2;
     }
 
     static Schedule cross(Schedule s1, Schedule s2) {
@@ -48,12 +63,34 @@ public class Main {
 
         before();
         System.out.println("Start");
-        Schedule schedule = new Schedule();
-        for(Task task : originalTasks){
-            schedule.addTask(task);
-        }
-        schedule.addAllDown();
+        schedules = generuj();
         System.out.println("exit");
+
+        /*List<Schedule> population = generuj();
+        List<Schedule> subpopulation;
+        boolean ready = false;
+
+        while (shouldProceed()) {
+            subpopulation = select(population);
+            population.clear();
+            while (population.size() < 5 * kPopulationSize) {
+                Schedule[] parents = getParents(subpopulation);
+                Schedule schedule1 = parents[0];
+                Schedule schedule2 = parents[1];
+                if (shouldCross()) {
+                    schedule1 = cross(parents[0], parents[1]);
+                    schedule2 = cross(parents[1], parents[0]);
+                }
+                if (shouldMutate()) {
+                    schedule1 = mutate(schedule1);
+                    schedule2 = mutate(schedule2);
+                }
+                population.add(schedule1);
+                population.add(schedule2);
+            }
+        }
+
+        System.out.println("hehe");*/
 
     }
 

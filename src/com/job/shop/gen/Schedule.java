@@ -35,7 +35,6 @@ public class Schedule {
     public void addAllDown() {
 
         while (toAdd.size() > 0) {
-            System.out.println("gege");
             boolean added = false;
             Job job = toAdd.get(0);
             for (int i = 0; i < down.size() - 1; i++) {
