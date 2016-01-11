@@ -1,25 +1,62 @@
 package com.job.shop.gen;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * Created by Mewa on 2015-12-30.
  */
-public abstract class Main {
-    protected final int kPopulationSize = 50;
+public class Main {
+    protected static final int kPopulationSize = 50;
+    public static final int MAX_JOB_TIME = 20;
+    public static final int BREAKS = 2;
+    public static final int TASKS_NUMBER = 10;
+    public static ArrayList<Task> originalTasks = new ArrayList<>();
+    public static int minTime = 999999999;
+    public static ArrayList<Integer> breaks = new ArrayList<>();
 
-    abstract List<Schedule> generuj();
+    static List<Schedule> generuj() {
+        return null;
+    }
 
-    abstract Schedule cross(Schedule s1, Schedule s2);
+    public static int nextBreak(int time) {
+        for (int i = 1; i < breaks.size(); i++) {
+            if(time<breaks.get(i)){
+                if(time<breaks.get(i-1)) {
+                    return breaks.get(i - 1);
+                } else {
+                    return breaks.get(i);
+                }
+            }
+        }
+        return minTime*2;
+    }
 
-    abstract Schedule mutate(Schedule schedule);
+    static Schedule cross(Schedule s1, Schedule s2) {
+        return null;
+    }
 
-    abstract List<Schedule> select(List<Schedule> schedules);
+    static Schedule mutate(Schedule schedule) {
+        return null;
+    }
 
-    public void main(String[] args) {
+    static List<Schedule> select(List<Schedule> schedules) {
+        return null;
+    }
+
+    public static void main(String[] args) {
+
+        before();
         System.out.println("Start");
-        List<Schedule> population = generuj();
+        Schedule schedule = new Schedule();
+        for(Task task : originalTasks){
+            schedule.addTask(task);
+        }
+        schedule.addAllDown();
+        System.out.println("exit");
+
+
+        /*List<Schedule> population = generuj();
         List<Schedule> subpopulation;
         boolean ready = false;
 
@@ -42,13 +79,47 @@ public abstract class Main {
                 population.add(schedule2);
             }
         }
+
+        System.out.println("hehe");*/
     }
 
-    protected abstract boolean shouldProceed();
+    private static void before() {
+        for (int i = 0; i < TASKS_NUMBER; i++) {
+            originalTasks.add(new Task());
+        }
+        int timeUp = 0;
+        int timeDown = 0;
+        int i = 0;
+        for (Task task : originalTasks) {
+            timeUp += task.getUp().getTime();
+            timeDown += task.getDown().getTime();
+            task.getUp().setNumber(i);
+            task.getDown().setNumber(i);
+            ++i;
+        }
+        if (timeDown > timeUp) {
+            minTime = timeDown;
+        } else {
+            minTime = timeUp;
+        }
+        for (i = minTime / BREAKS; i <= minTime; i += minTime / BREAKS) {
+            breaks.add(i);
+        }
+    }
 
-    protected abstract Schedule[] getParents(List<Schedule> subpopulation);
+    static boolean shouldProceed() {
+        return false;
+    }
 
-    protected abstract boolean shouldCross();
+    static Schedule[] getParents(List<Schedule> subpopulation) {
+        return new Schedule[0];
+    }
 
-    protected abstract boolean shouldMutate();
+    static boolean shouldCross() {
+        return false;
+    }
+
+    static boolean shouldMutate() {
+        return false;
+    }
 }
