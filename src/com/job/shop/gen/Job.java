@@ -61,4 +61,10 @@ public class Job {
         this.whenCouldStarts = whenCouldStarts;
         this.time = time;
     }
+    public Job(Job job) {
+        this.whenJobWillEnd = job.whenJobWillEnd;
+        this.number = job.number;
+        this.whenCouldStarts = job.whenCouldStarts;
+        this.time = job.time;
+    }
 }

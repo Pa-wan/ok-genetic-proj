@@ -35,4 +35,8 @@ public class Task {
         this.down = new Job(down.getWhenJobWillEnd(), down.getNumber(), down.getWhenCouldStarts(), down.getTime());
         this.up = new Job(up.getWhenJobWillEnd(), up.getNumber(), up.getWhenCouldStarts(), up.getTime());
     }
+
+    public boolean equals(Task obj) {
+        return up.getNumber() == obj.getUp().getNumber();
+    }
 }

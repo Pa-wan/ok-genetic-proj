@@ -58,6 +58,7 @@ public class Main {
         System.out.println("exit");
         schedules.get(0).mutate();
         System.out.println("exit");
+        schedules.get(0).crossing(schedules.get(1));
 
 
         /*List<Schedule> population = generuj();

@@ -10,6 +10,40 @@ public class Schedule {
     ArrayList<Job> down = new ArrayList<>();
     ArrayList<Job> toAdd = new ArrayList<>();
 
+    public Schedule crossing(Schedule schedule){
+        Schedule children = new Schedule();
+        ArrayList<Task> first = getTasks();
+        ArrayList<Task> second = schedule.getTasks();
+        int division = new Random().nextInt(first.size()-2);
+        for(int i = first.size()-1; i>= division ; i--){
+            first.remove(i);
+        }
+        for(Task task : second){
+            boolean alreadyIn = false;
+            for(int i = 0; i <first.size();i++){
+                if(first.get(i).equals(task)){
+                    alreadyIn = true;
+                    break;
+                }
+            }
+            if(!alreadyIn){
+                first.add(task);
+            }
+        }
+        for(Task task : first){
+            children.addTask(task);
+        }
+        children.addAllDown();
+        System.out.println("rodzic lewy");
+        print();
+        System.out.println("rodzic prawy");
+        schedule.print();
+        System.out.println("dziecko");
+        children.print();
+
+        return children;
+    }
+
     public void mutate() {
         print();
         int x = new Random().nextInt(up.size());
@@ -51,15 +85,33 @@ public class Schedule {
     }
 
     private ArrayList<Task> removeTo(int x) {
+
         ArrayList<Task> tasks = new ArrayList<>();
         for (int i = up.size() - 1; i >= x; i--) {
             Job upJobToCopy, downJobToCopy = null;
             upJobToCopy = up.get(i);
             up.remove(i);
             for (int j = down.size() - 1; j >= 0; j--) {
-                if (upJobToCopy.equals(down.get(i))) {
-                    downJobToCopy = down.get(i);
-                    down.remove(i);
+                if (upJobToCopy.equals(down.get(j))) {
+                    downJobToCopy = down.get(j);
+                    down.remove(j);
+                    break;
+                }
+            }
+            tasks.add(new Task(upJobToCopy, downJobToCopy));
+        }
+        Collections.reverse(tasks);
+        return tasks;
+    }
+
+    private ArrayList<Task> getTasks() {
+        ArrayList<Task> tasks = new ArrayList<>();
+        for (int i = up.size() - 1; i >= 0; i--) {
+            Job upJobToCopy, downJobToCopy = null;
+            upJobToCopy = up.get(i);
+            for (int j = down.size() - 1; j >= 0; j--) {
+                if (upJobToCopy.equals(down.get(j))) {
+                    downJobToCopy = down.get(j);
                     break;
                 }
             }
