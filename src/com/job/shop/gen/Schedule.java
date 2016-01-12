@@ -10,27 +10,27 @@ public class Schedule {
     ArrayList<Job> down = new ArrayList<>();
     ArrayList<Job> toAdd = new ArrayList<>();
 
-    public Schedule crossing(Schedule schedule){
+    public Schedule crossing(Schedule schedule) {
         Schedule children = new Schedule();
         ArrayList<Task> first = getTasks();
         ArrayList<Task> second = schedule.getTasks();
-        int division = new Random().nextInt(first.size()-2);
-        for(int i = first.size()-1; i>= division ; i--){
+        int division = new Random().nextInt(first.size() - 2);
+        for (int i = first.size() - 1; i >= division; i--) {
             first.remove(i);
         }
-        for(Task task : second){
+        for (Task task : second) {
             boolean alreadyIn = false;
-            for(int i = 0; i <first.size();i++){
-                if(first.get(i).equals(task)){
+            for (int i = 0; i < first.size(); i++) {
+                if (first.get(i).equals(task)) {
                     alreadyIn = true;
                     break;
                 }
             }
-            if(!alreadyIn){
+            if (!alreadyIn) {
                 first.add(task);
             }
         }
-        for(Task task : first){
+        for (Task task : first) {
             children.addTask(task);
         }
         children.addAllDown();
@@ -66,20 +66,20 @@ public class Schedule {
         tasks.add(x, tasks.get(0));
         tasks.remove(0);
         tasks.add(0, temp);
-        for(Task task : tasks){
+        for (Task task : tasks) {
             addTask(task);
         }
         addAllDown();
         print();
     }
 
-    public void print(){
-        for(Job job:up){
-            System.out.print(job.getWhenStarts() + " " + job.getNumber() + " "+ job.getTime() + " " + job.getWhenJobWillEnd() + "\t\t");
+    public void print() {
+        for (Job job : up) {
+            System.out.print(job.getWhenStarts() + " " + job.getNumber() + " " + job.getTime() + " " + job.getWhenJobWillEnd() + "\t\t");
         }
         System.out.println();
-        for(Job job:down){
-            System.out.print(job.getWhenStarts() + " " + job.getNumber() + " "+ job.getTime() + " " + job.getWhenJobWillEnd() + "\t\t");
+        for (Job job : down) {
+            System.out.print(job.getWhenStarts() + " " + job.getNumber() + " " + job.getTime() + " " + job.getWhenJobWillEnd() + "\t\t");
         }
         System.out.println();
     }
@@ -140,19 +140,19 @@ public class Schedule {
             addTaskUp(0, task, 1);
         } else {
             boolean added = false;
-            for(int i = 0; i < up.size() - 1; i++){
-                if(up.get(i+1).getWhenStarts() - up.get(i).getWhenJobWillEnd() - 1 >= task.getUp().getTime() &&
-                        Main.nextBreak(up.get(i).getWhenJobWillEnd()) - up.get(i).getWhenJobWillEnd() - 1 >= task.getUp().getTime()){
-                    addTaskUp(i+1, task, up.get(i).getWhenJobWillEnd()+1);
+            for (int i = 0; i < up.size() - 1; i++) {
+                if (up.get(i + 1).getWhenStarts() - up.get(i).getWhenJobWillEnd() - 1 >= task.getUp().getTime() &&
+                        Main.nextBreak(up.get(i).getWhenJobWillEnd()) - up.get(i).getWhenJobWillEnd() - 1 >= task.getUp().getTime()) {
+                    addTaskUp(i + 1, task, up.get(i).getWhenJobWillEnd() + 1);
                     added = true;
                     break;
                 }
             }
-            if(!added){
-                if(up.get(up.size()-1).getWhenJobWillEnd() - Main.nextBreak(up.get(up.size()-1).getWhenJobWillEnd()) - 1 >= task.getUp().getTime()){
-                    addTaskUp(up.size(), task, up.get(up.size()-1).getWhenJobWillEnd() +1 );
+            if (!added) {
+                if (Main.nextBreak(up.get(up.size() - 1).getWhenJobWillEnd()) - up.get(up.size() - 1).getWhenJobWillEnd() - 1 >= task.getUp().getTime()) {
+                    addTaskUp(up.size(), task, up.get(up.size() - 1).getWhenJobWillEnd() + 1);
                 } else {
-                    addTaskUp(up.size(), task, Main.nextBreak(up.get(up.size()-1).getWhenJobWillEnd() +1));
+                    addTaskUp(up.size(), task, Main.nextBreak(up.get(up.size() - 1).getWhenJobWillEnd() + 1));
                 }
             }
         }
@@ -204,5 +204,11 @@ public class Schedule {
 
             toAdd.remove(0);
         }
+    }
+
+    public int getTime() {
+        int upTime = up.get(up.size() - 1).getTime();
+        int downTime = down.get(down.size() - 1).getTime();
+        return upTime > downTime ? upTime : downTime;
     }
 }
