@@ -20,16 +20,7 @@ public class Main {
     static ArrayList<Schedule> generuj() {
         ArrayList<Schedule> list = new ArrayList<>();
         for (int i = 0; i < kPopulationSize; i++) {
-            ArrayList<Task> copyTasks = new ArrayList<>();
-            copyTasks.addAll(originalTasks);
-            Schedule schedule = new Schedule();
-            while (copyTasks.size() > 0) {
-                int random = new Random().nextInt(copyTasks.size());
-                schedule.addTask(copyTasks.get(random));
-                copyTasks.remove(random);
-            }
-            schedule.addAllDown();
-            list.add(schedule);
+            list.add(new Schedule().generuj());
         }
         return list;
     }
@@ -65,6 +56,9 @@ public class Main {
         System.out.println("Start");
         schedules = generuj();
         System.out.println("exit");
+        schedules.get(0).mutate();
+        System.out.println("exit");
+
 
         /*List<Schedule> population = generuj();
         List<Schedule> subpopulation;

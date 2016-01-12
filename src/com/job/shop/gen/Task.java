@@ -19,6 +19,20 @@ public class Task {
     }
 
     public void setDownPossibleStart() {
-        getDown().setWhenCouldStarts(up.getWhenJobWillEnd()+1);
+        getDown().setWhenCouldStarts(up.getWhenJobWillEnd() + 1);
+    }
+
+    public Task() {
+    }
+
+    public Task(Task task) {
+        Job down = task.getDown();
+        Job up = task.getUp();
+        this.down = new Job(down.getWhenJobWillEnd(), down.getNumber(), down.getWhenCouldStarts());
+        this.up = new Job(up.getWhenJobWillEnd(), up.getNumber(), up.getWhenCouldStarts());
+    }
+    public Task(Job up, Job down) {
+        this.down = new Job(down.getWhenJobWillEnd(), down.getNumber(), down.getWhenCouldStarts());
+        this.up = new Job(up.getWhenJobWillEnd(), up.getNumber(), up.getWhenCouldStarts());
     }
 }

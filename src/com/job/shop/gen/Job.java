@@ -46,4 +46,18 @@ public class Job {
     public void setNumber(int number) {
         this.number = number;
     }
+
+
+    public boolean equals(Job obj) {
+        return obj.getNumber() == number;
+    }
+
+    public Job() {
+    }
+
+    public Job(int whenJobWillEnd, int number, int whenCouldStarts) {
+        this.whenJobWillEnd = whenJobWillEnd;
+        this.number = number;
+        this.whenCouldStarts = whenCouldStarts;
+    }
 }
