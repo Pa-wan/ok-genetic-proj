@@ -7,14 +7,15 @@ import java.util.*;
  */
 public class Main {
     protected static final int kPopulationSize = 50;
-    public static final int MAX_JOB_TIME = 120;
-    public static final int BREAKS = 14;
-    public static final int TASKS_NUMBER = 110;
+    public static final int MAX_JOB_TIME = 140;
+    public static final int BREAKS = 13;
+    public static final int TASKS_NUMBER = 120;
     public static final int HOW_LONG = 10;
     public static long time;
     public static ArrayList<Task> originalTasks = new ArrayList<>();
     public static int minTime = 999999999;
-    public static ArrayList<Integer> breaks = new ArrayList<>();
+    public static ArrayList<Integer> breaksBegin = new ArrayList<>();
+    public static ArrayList<Integer> breaksEnd = new ArrayList<>();
     public static ArrayList<Schedule> schedules = new ArrayList<>();
 
     static ArrayList<Schedule> generuj() {
@@ -26,12 +27,25 @@ public class Main {
     }
 
     public static int nextBreakUp(int time) {
-        for (int i = 1; i < breaks.size(); i++) {
-            if (time < breaks.get(i)) {
-                if (time < breaks.get(i - 1)) {
-                    return breaks.get(i - 1);
+        for (int i = 1; i < breaksBegin.size(); i++) {
+            if (time < breaksBegin.get(i)) {
+                if (time < breaksBegin.get(i - 1)) {
+                    return breaksBegin.get(i - 1);
                 } else {
-                    return breaks.get(i);
+                    return breaksBegin.get(i);
+                }
+            }
+        }
+        return minTime * 2;
+    }
+
+    public static int timeOfNextBreakUpEnd(int time) {
+        for (int i = 1; i < breaksBegin.size(); i++) {
+            if (time < breaksBegin.get(i)) {
+                if (time < breaksBegin.get(i - 1)) {
+                    return breaksEnd.get(i - 1);
+                } else {
+                    return breaksEnd.get(i);
                 }
             }
         }
@@ -96,7 +110,6 @@ public class Main {
                     return 0;
                 }
             });
-            System.out.println("posortowane");
             schedules.clear();
             for (int i = 0; i < 5; i++) {
                 schedules.add(subpopulation.get(0));
@@ -135,9 +148,11 @@ public class Main {
             minTime = timeDown;
         } else {
             minTime = timeUp;
+            minTime+= 10*BREAKS;
         }
         for (i = minTime / BREAKS; i <= minTime; i += minTime / BREAKS) {
-            breaks.add(i);
+            breaksBegin.add(i);
+            breaksEnd.add(i + 10);
         }
         schedules = generuj();
         time = Calendar.getInstance().getTimeInMillis();

@@ -186,7 +186,7 @@ public class Schedule {
                 if (Main.nextBreakUp(up.get(up.size() - 1).getWhenJobWillEnd()) - up.get(up.size() - 1).getWhenJobWillEnd() - 1 >= task.getUp().getTime()) {
                     addTaskUp(up.size(), task, up.get(up.size() - 1).getWhenJobWillEnd() + 1);
                 } else {
-                    addTaskUp(up.size(), task, Main.nextBreakUp(up.get(up.size() - 1).getWhenJobWillEnd() + 1));
+                    addTaskUp(up.size(), task, Main.timeOfNextBreakUpEnd(up.get(up.size() - 1).getWhenJobWillEnd() + 1));
                 }
             }
         }
@@ -201,7 +201,6 @@ public class Schedule {
     }
 
     private void addAllDown() {
-
         while (toAdd.size() > 0) {
             boolean added = false;
             Job job = toAdd.get(0);
