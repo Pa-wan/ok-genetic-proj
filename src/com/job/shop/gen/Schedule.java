@@ -10,6 +10,21 @@ public class Schedule {
     ArrayList<Job> down = new ArrayList<>();
     ArrayList<Job> toAdd = new ArrayList<>();
 
+    public Schedule(){
+    }
+
+    public Schedule(Schedule schedule) {
+        for(Job job : schedule.up){
+            this.up.add(new Job(job));
+        }
+        for(Job job : schedule.down){
+            this.down.add(new Job(job));
+        }
+        for(Job job : schedule.down){
+            this.toAdd.add(new Job(job));
+        }
+    }
+
     public Schedule crossing(Schedule schedule) {
         Schedule children = new Schedule();
         ArrayList<Task> first = getTasks();
@@ -34,18 +49,37 @@ public class Schedule {
             children.addTask(task);
         }
         children.addAllDown();
-        System.out.println("rodzic lewy");
-        print();
-        System.out.println("rodzic prawy");
-        schedule.print();
-        System.out.println("dziecko");
-        children.print();
+        return children;
+    }
 
+    public Schedule crossingReverse(Schedule schedule) {
+        Schedule children = new Schedule();
+        ArrayList<Task> first = getTasks();
+        ArrayList<Task> second = schedule.getTasks();
+        int division = new Random().nextInt(first.size() - 2);
+        for (int i = division; i >= 0; i--) {
+            first.remove(i);
+        }
+        for (Task task : second) {
+            boolean alreadyIn = false;
+            for (int i = 0; i < first.size(); i++) {
+                if (first.get(i).equals(task)) {
+                    alreadyIn = true;
+                    break;
+                }
+            }
+            if (!alreadyIn) {
+                first.add(0,task);
+            }
+        }
+        for (Task task : first) {
+            children.addTask(task);
+        }
+        children.addAllDown();
         return children;
     }
 
     public void mutate() {
-        print();
         int x = new Random().nextInt(up.size());
         int y = new Random().nextInt(up.size());
         int min;
@@ -60,6 +94,7 @@ public class Schedule {
         min = x > y ? y : x;
         max = x > y ? x : y;
         x = max - min;
+        Job job = up.get(0);
         ArrayList<Task> tasks = removeTo(min);
         Task temp = tasks.get(x);
         tasks.remove(x);
@@ -70,7 +105,6 @@ public class Schedule {
             addTask(task);
         }
         addAllDown();
-        print();
     }
 
     public void print() {
@@ -142,17 +176,17 @@ public class Schedule {
             boolean added = false;
             for (int i = 0; i < up.size() - 1; i++) {
                 if (up.get(i + 1).getWhenStarts() - up.get(i).getWhenJobWillEnd() - 1 >= task.getUp().getTime() &&
-                        Main.nextBreak(up.get(i).getWhenJobWillEnd()) - up.get(i).getWhenJobWillEnd() - 1 >= task.getUp().getTime()) {
+                        Main.nextBreakUp(up.get(i).getWhenJobWillEnd()) - up.get(i).getWhenJobWillEnd() - 1 >= task.getUp().getTime()) {
                     addTaskUp(i + 1, task, up.get(i).getWhenJobWillEnd() + 1);
                     added = true;
                     break;
                 }
             }
             if (!added) {
-                if (Main.nextBreak(up.get(up.size() - 1).getWhenJobWillEnd()) - up.get(up.size() - 1).getWhenJobWillEnd() - 1 >= task.getUp().getTime()) {
+                if (Main.nextBreakUp(up.get(up.size() - 1).getWhenJobWillEnd()) - up.get(up.size() - 1).getWhenJobWillEnd() - 1 >= task.getUp().getTime()) {
                     addTaskUp(up.size(), task, up.get(up.size() - 1).getWhenJobWillEnd() + 1);
                 } else {
-                    addTaskUp(up.size(), task, Main.nextBreak(up.get(up.size() - 1).getWhenJobWillEnd() + 1));
+                    addTaskUp(up.size(), task, Main.nextBreakUp(up.get(up.size() - 1).getWhenJobWillEnd() + 1));
                 }
             }
         }
@@ -173,9 +207,9 @@ public class Schedule {
             Job job = toAdd.get(0);
             for (int i = 0; i < down.size() - 1; i++) {
                 if (down.get(i + 1).getWhenStarts() - down.get(i).getWhenJobWillEnd() - 1 >= job.getTime() &&
-                        Main.nextBreak(down.get(i).getWhenJobWillEnd()) - down.get(i).getWhenJobWillEnd() - 1 >= job.getTime() &&
+                        Main.nextBreakDown(down.get(i).getWhenJobWillEnd()) - down.get(i).getWhenJobWillEnd() - 1 >= job.getTime() &&
                         down.get(i + 1).getWhenStarts() - job.getWhenCouldStarts() - 1 >= job.getTime() &&
-                        Main.nextBreak(job.getWhenCouldStarts()) - job.getWhenCouldStarts() - 1 >= job.getTime()) {
+                        Main.nextBreakDown(job.getWhenCouldStarts()) - job.getWhenCouldStarts() - 1 >= job.getTime()) {
                     job.setWhenStarts(job.getWhenCouldStarts() > down.get(i).getWhenJobWillEnd() + 1 ?
                             job.getWhenCouldStarts() : down.get(i).getWhenJobWillEnd() + 1);
                     down.add(i + 1, job);
@@ -184,20 +218,20 @@ public class Schedule {
                 }
             }
             if (down.size() == 0) {
-                if (Main.nextBreak(job.getWhenCouldStarts()) - job.getWhenCouldStarts() - 1 > job.getTime()) {
+                if (Main.nextBreakDown(job.getWhenCouldStarts()) - job.getWhenCouldStarts() - 1 > job.getTime()) {
                     job.setWhenStarts(job.getWhenCouldStarts());
                     added = true;
                     down.add(job);
                 }
             }
             if (!added) {
-                if (Main.nextBreak(down.get(down.size() - 1).getWhenJobWillEnd()) - down.get(down.size() - 1).getWhenJobWillEnd() - 1 >= job.getTime() &&
-                        Main.nextBreak(down.get(down.size() - 1).getWhenJobWillEnd()) - job.getWhenCouldStarts() - 1 >= job.getTime()) {
+                if (Main.nextBreakDown(down.get(down.size() - 1).getWhenJobWillEnd()) - down.get(down.size() - 1).getWhenJobWillEnd() - 1 >= job.getTime() &&
+                        Main.nextBreakDown(down.get(down.size() - 1).getWhenJobWillEnd()) - job.getWhenCouldStarts() - 1 >= job.getTime()) {
                     job.setWhenStarts(job.getWhenCouldStarts() > down.get(down.size() - 1).getWhenJobWillEnd() + 1 ?
                             job.getWhenCouldStarts() : down.get(down.size() - 1).getWhenJobWillEnd() + 1);
                 } else {
-                    job.setWhenStarts(Main.nextBreak(down.get(down.size() - 1).getWhenJobWillEnd()) > job.getWhenCouldStarts() ?
-                            Main.nextBreak(down.get(down.size() - 1).getWhenJobWillEnd()) : job.getWhenCouldStarts());
+                    job.setWhenStarts(Main.nextBreakDown(down.get(down.size() - 1).getWhenJobWillEnd()) > job.getWhenCouldStarts() ?
+                            Main.nextBreakDown(down.get(down.size() - 1).getWhenJobWillEnd()) : job.getWhenCouldStarts());
                 }
                 down.add(job);
             }
@@ -207,8 +241,13 @@ public class Schedule {
     }
 
     public int getTime() {
-        int upTime = up.get(up.size() - 1).getTime();
-        int downTime = down.get(down.size() - 1).getTime();
+        int upTime = up.get(up.size() - 1).getWhenJobWillEnd();
+        int downTime = down.get(down.size() - 1).getWhenJobWillEnd();
         return upTime > downTime ? upTime : downTime;
+    }
+
+    @Override
+    public String toString() {
+        return Integer.toString(getTime());
     }
 }
