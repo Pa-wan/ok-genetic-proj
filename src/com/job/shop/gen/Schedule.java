@@ -137,24 +137,33 @@ public class Schedule {
 
     private void addTask(Task task) {
         if (up.size() == 0) {
-            addTaskUp(task, 1);
+            addTaskUp(0, task, 1);
         } else {
-            int whenCanIStart = up.get(up.size() - 1).getWhenJobWillEnd() + 1;
-            int przerwa = Main.nextBreak(whenCanIStart);
-            if (whenCanIStart < przerwa && whenCanIStart + task.getUp().getTime() < przerwa) {
-                addTaskUp(task, whenCanIStart);
-            } else {
-                addTaskUp(task, przerwa);
+            boolean added = false;
+            for(int i = 0; i < up.size() - 1; i++){
+                if(up.get(i+1).getWhenStarts() - up.get(i).getWhenJobWillEnd() - 1 >= task.getUp().getTime() &&
+                        Main.nextBreak(up.get(i).getWhenJobWillEnd()) - up.get(i).getWhenJobWillEnd() - 1 >= task.getUp().getTime()){
+                    addTaskUp(i+1, task, up.get(i).getWhenJobWillEnd()+1);
+                    added = true;
+                    break;
+                }
+            }
+            if(!added){
+                if(up.get(up.size()-1).getWhenJobWillEnd() - Main.nextBreak(up.get(up.size()-1).getWhenJobWillEnd()) - 1 >= task.getUp().getTime()){
+                    addTaskUp(up.size(), task, up.get(up.size()-1).getWhenJobWillEnd() +1 );
+                } else {
+                    addTaskUp(up.size(), task, Main.nextBreak(up.get(up.size()-1).getWhenJobWillEnd() +1));
+                }
             }
         }
     }
 
 
-    private void addTaskUp(Task task, int beginning) {
+    private void addTaskUp(int where, Task task, int beginning) {
         task.getUp().setWhenStarts(beginning);
         task.setDownPossibleStart();
         toAdd.add(task.getDown());
-        up.add(task.getUp());
+        up.add(where, task.getUp());
     }
 
     private void addAllDown() {
