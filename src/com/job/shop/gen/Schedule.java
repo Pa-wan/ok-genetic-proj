@@ -41,11 +41,11 @@ public class Schedule {
 
     public void print(){
         for(Job job:up){
-            System.out.print(job.getWhenStarts() + " " + job.getNumber() + " " + job.getWhenJobWillEnd() + "\t");
+            System.out.print(job.getWhenStarts() + " " + job.getNumber() + " "+ job.getTime() + " " + job.getWhenJobWillEnd() + "\t\t");
         }
         System.out.println();
         for(Job job:down){
-            System.out.print(job.getWhenStarts() + " " + job.getNumber() + " " + job.getWhenJobWillEnd() + "\t");
+            System.out.print(job.getWhenStarts() + " " + job.getNumber() + " "+ job.getTime() + " " + job.getWhenJobWillEnd() + "\t\t");
         }
         System.out.println();
     }

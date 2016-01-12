@@ -7,7 +7,7 @@ import java.util.Random;
  */
 public class Job {
     private int whenJobWillEnd;
-    final private int time = new Random().nextInt(Main.MAX_JOB_TIME) + 1;
+    private int time = new Random().nextInt(Main.MAX_JOB_TIME) + 1;
     private int number;
     private int whenCouldStarts;
 
@@ -55,9 +55,10 @@ public class Job {
     public Job() {
     }
 
-    public Job(int whenJobWillEnd, int number, int whenCouldStarts) {
+    public Job(int whenJobWillEnd, int number, int whenCouldStarts, int time) {
         this.whenJobWillEnd = whenJobWillEnd;
         this.number = number;
         this.whenCouldStarts = whenCouldStarts;
+        this.time = time;
     }
 }

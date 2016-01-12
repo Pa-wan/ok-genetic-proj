@@ -28,11 +28,11 @@ public class Task {
     public Task(Task task) {
         Job down = task.getDown();
         Job up = task.getUp();
-        this.down = new Job(down.getWhenJobWillEnd(), down.getNumber(), down.getWhenCouldStarts());
-        this.up = new Job(up.getWhenJobWillEnd(), up.getNumber(), up.getWhenCouldStarts());
+        this.down = new Job(down.getWhenJobWillEnd(), down.getNumber(), down.getWhenCouldStarts(),down.getTime());
+        this.up = new Job(up.getWhenJobWillEnd(), up.getNumber(), up.getWhenCouldStarts(), up.getTime());
     }
     public Task(Job up, Job down) {
-        this.down = new Job(down.getWhenJobWillEnd(), down.getNumber(), down.getWhenCouldStarts());
-        this.up = new Job(up.getWhenJobWillEnd(), up.getNumber(), up.getWhenCouldStarts());
+        this.down = new Job(down.getWhenJobWillEnd(), down.getNumber(), down.getWhenCouldStarts(), down.getTime());
+        this.up = new Job(up.getWhenJobWillEnd(), up.getNumber(), up.getWhenCouldStarts(), up.getTime());
     }
 }
