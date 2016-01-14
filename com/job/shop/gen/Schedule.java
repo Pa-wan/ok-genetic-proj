@@ -254,15 +254,4 @@ public class Schedule {
     public String toString() {
         return Integer.toString(getTime());
     }
-
-    public void printResult(PrintStream printStream) {
-        for (Job job : up) {
-            printStream.print(job.getNumber() + "(" + job.getTime() + ")" + "\t");
-        }
-        printStream.println();
-        for (Job job : down) {
-            printStream.print(job.getNumber() + "(" + job.getTime() + ")" + "\t");
-        }
-        printStream.println();
-    }
 }
