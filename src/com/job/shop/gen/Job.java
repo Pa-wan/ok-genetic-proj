@@ -31,11 +31,11 @@ public class Job {
         this.whenJobWillEnd = whenJobWillEnd;
     }
 
-    public void setWhenStarts(int whenStarts){
+    public void setWhenStarts(int whenStarts) {
         this.whenJobWillEnd = whenStarts + this.time - 1;
     }
 
-    public int getWhenStarts(){
+    public int getWhenStarts() {
         return whenJobWillEnd - time + 1;
     }
 
@@ -47,6 +47,9 @@ public class Job {
         this.number = number;
     }
 
+    public void setTime(int time) {
+        this.time = time;
+    }
 
     public boolean equals(Job obj) {
         return obj.getNumber() == number;
@@ -61,6 +64,7 @@ public class Job {
         this.whenCouldStarts = whenCouldStarts;
         this.time = time;
     }
+
     public Job(Job job) {
         this.whenJobWillEnd = job.whenJobWillEnd;
         this.number = job.number;

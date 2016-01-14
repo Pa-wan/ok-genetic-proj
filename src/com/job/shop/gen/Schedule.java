@@ -1,5 +1,6 @@
 package com.job.shop.gen;
 
+import java.io.PrintStream;
 import java.util.*;
 
 /**
@@ -10,17 +11,17 @@ public class Schedule {
     ArrayList<Job> down = new ArrayList<>();
     ArrayList<Job> toAdd = new ArrayList<>();
 
-    public Schedule(){
+    public Schedule() {
     }
 
     public Schedule(Schedule schedule) {
-        for(Job job : schedule.up){
+        for (Job job : schedule.up) {
             this.up.add(new Job(job));
         }
-        for(Job job : schedule.down){
+        for (Job job : schedule.down) {
             this.down.add(new Job(job));
         }
-        for(Job job : schedule.down){
+        for (Job job : schedule.down) {
             this.toAdd.add(new Job(job));
         }
     }
@@ -69,7 +70,7 @@ public class Schedule {
                 }
             }
             if (!alreadyIn) {
-                first.add(0,task);
+                first.add(0, task);
             }
         }
         for (Task task : first) {
@@ -107,15 +108,19 @@ public class Schedule {
         addAllDown();
     }
 
-    public void print() {
+    public void print(PrintStream printStream) {
+        //printStream.print("up\t");
         for (Job job : up) {
-            System.out.print(job.getWhenStarts() + " " + job.getNumber() + " " + job.getTime() + " " + job.getWhenJobWillEnd() + "\t\t");
+            //System.out.print(job.getWhenStarts() + " " + job.getNumber() + " " + job.getTime() + " " + job.getWhenJobWillEnd() + "\t|\t");
+            printStream.print(job.getNumber() + ":" + job.getTime() + ":" + job.getWhenStarts() + "\t");
         }
-        System.out.println();
+        printStream.println();
+        //printStream.print("dn\t");
         for (Job job : down) {
-            System.out.print(job.getWhenStarts() + " " + job.getNumber() + " " + job.getTime() + " " + job.getWhenJobWillEnd() + "\t\t");
+            //System.out.print(job.getWhenStarts() + " " + job.getNumber() + " " + job.getTime() + " " + job.getWhenJobWillEnd() + "\t|\t");
+            printStream.print(job.getNumber() + ":" + job.getTime() + ":" + job.getWhenStarts() + "\t");
         }
-        System.out.println();
+        printStream.println();
     }
 
     private ArrayList<Task> removeTo(int x) {
@@ -169,7 +174,7 @@ public class Schedule {
         return this;
     }
 
-    private void addTask(Task task) {
+    public void addTask(Task task) {
         if (up.size() == 0) {
             addTaskUp(0, task, 1);
         } else {
@@ -200,7 +205,7 @@ public class Schedule {
         up.add(where, task.getUp());
     }
 
-    private void addAllDown() {
+    public void addAllDown() {
         while (toAdd.size() > 0) {
             boolean added = false;
             Job job = toAdd.get(0);

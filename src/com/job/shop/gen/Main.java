@@ -1,5 +1,6 @@
 package com.job.shop.gen;
 
+import java.io.*;
 import java.util.*;
 
 /**
@@ -11,6 +12,14 @@ public class Main {
     public static final int BREAKS = 13;
     public static final int TASKS_NUMBER = 120;
     public static final int HOW_LONG = 10;
+    private static final String INSTANCE_FILENAME = String.format(
+            "inst%d_maxTjob%d_breaks%d_tasks%d_maxT%d",
+            kPopulationSize,
+            MAX_JOB_TIME,
+            BREAKS,
+            TASKS_NUMBER,
+            HOW_LONG
+    );
     public static long time;
     public static ArrayList<Task> originalTasks = new ArrayList<>();
     public static int minTime = 999999999;
@@ -18,12 +27,86 @@ public class Main {
     public static ArrayList<Integer> breaksEnd = new ArrayList<>();
     public static ArrayList<Schedule> schedules = new ArrayList<>();
 
-    static ArrayList<Schedule> generuj() {
-        ArrayList<Schedule> list = new ArrayList<>();
-        for (int i = 0; i < kPopulationSize; i++) {
-            list.add(new Schedule().generuj());
+    static ArrayList<Schedule> laduj() {
+        ArrayList<Schedule> loaded = new ArrayList<>();
+        BufferedReader reader = null;
+        try {
+            File file = new File(INSTANCE_FILENAME + ".txt");
+            reader = new BufferedReader(new FileReader(file));
+            String line1, line2;
+            Job up = null;
+            Job down = null;
+            while ((line1 = reader.readLine()) != null && (line2 = reader.readLine()) != null) {
+                Schedule schedule = new Schedule();
+                String[] args1 = line1.split("\t");
+                String[] args2 = line1.split("\t");
+                for (int i = 0; i < args1.length; ++i) {
+                    String[] params1 = args1[i].split(":");
+                    String[] params2 = args2[i].split(":");
+                    for (int j = 0; j < params1.length; ++j) {
+                        int number = Integer.valueOf(params1[0]);
+                        int time = Integer.valueOf(params1[1]);
+                        int whenStarts = Integer.valueOf(params1[2]);
+                        up = new Job();
+                        up.setNumber(number);
+                        up.setTime(time);
+                        up.setWhenStarts(whenStarts);
+                        number = Integer.valueOf(params2[0]);
+                        time = Integer.valueOf(params2[1]);
+                        whenStarts = Integer.valueOf(params2[2]);
+                        down = new Job();
+                        down.setNumber(number);
+                        down.setTime(time);
+                        down.setWhenStarts(whenStarts);
+                    }
+                    Task task = new Task(up, down);
+                    schedule.addTask(task);
+                }
+                schedule.addAllDown();
+                loaded.add(schedule);
+            }
+            return loaded;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return generuj();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        return list;
+        return null;
+    }
+
+    static ArrayList<Schedule> generuj() {
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(INSTANCE_FILENAME + ".txt");
+            PrintStream printStream = new PrintStream(fos);
+            ArrayList<Schedule> list = new ArrayList<>();
+            for (int i = 0; i < kPopulationSize; i++) {
+                Schedule schedule = new Schedule().generuj();
+                schedule.print(printStream);
+                list.add(schedule);
+            }
+            return list;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
     }
 
     public static int nextBreakUp(int time) {
@@ -56,18 +139,6 @@ public class Main {
         return minTime * 2;
     }
 
-    static Schedule cross(Schedule s1, Schedule s2) {
-        return null;
-    }
-
-    static Schedule mutate(Schedule schedule) {
-        return null;
-    }
-
-    static List<Schedule> select(List<Schedule> schedules) {
-        return null;
-    }
-
     public static void main(String[] args) {
         System.out.println("start");
         before();
@@ -83,7 +154,6 @@ public class Main {
                         y++;
                     }
                 }
-
 
                 subpopulation.add(schedules.get(x).crossing(schedules.get(y)));
                 subpopulation.add(schedules.get(y).crossing(schedules.get(x)));
@@ -126,8 +196,31 @@ public class Main {
             }
             subpopulation.clear();
         }
-        System.out.println("exit");
-
+        int min = schedules.get(0).getTime();
+        for (Schedule schedule : schedules) {
+            if (schedule.getTime() < min) {
+                min = schedule.getTime();
+            }
+        }
+        System.out.println("min time: " + min);
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(new File(INSTANCE_FILENAME + "results.txt"), true);
+            writer.append(schedules.toString()).append(System.lineSeparator());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private static void before() {
@@ -148,13 +241,13 @@ public class Main {
             minTime = timeDown;
         } else {
             minTime = timeUp;
-            minTime+= 10*BREAKS;
+            minTime += 10 * BREAKS;
         }
         for (i = minTime / BREAKS; i <= minTime; i += minTime / BREAKS) {
             breaksBegin.add(i);
             breaksEnd.add(i + 10);
         }
-        schedules = generuj();
+        schedules = laduj();
         time = Calendar.getInstance().getTimeInMillis();
     }
 
