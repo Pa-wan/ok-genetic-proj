@@ -8,6 +8,8 @@ import java.util.*;
  */
 public class Main {
     private static final String GEN = "gen";
+    private static String GEN_FILENAME;
+    private static int MAX_ITERATIONS = -1;
     protected static int kPopulationSize = 10;
     public static int MAX_JOB_TIME = 140;
     public static int BREAKS = 13;
@@ -27,18 +29,26 @@ public class Main {
             System.out.println("start");
             kPopulationSize = Integer.valueOf(args[0]);
             HOW_LONG = Integer.valueOf(args[1]);
+            if (args.length > 4) {
+                MAX_ITERATIONS = HOW_LONG;
+                HOW_LONG = -1;
+                System.out.println("Launching " + MAX_ITERATIONS + " iterations");
+            }
             BREAKS = Integer.valueOf(args[2]);
             MAX_JOB_TIME = Integer.valueOf(args[3]);
         }
+        GEN_FILENAME = GEN + MAX_JOB_TIME + ".txt";
         INSTANCE_FILENAME = String.format(
-                "inst%d_maxTjob%d_breaks%d_tasks%d_maxT%d",
+                "inst%d_maxTjob%d_breaks%d_tasks%d_maxT%d_ITER%d",
                 kPopulationSize,
                 MAX_JOB_TIME,
                 BREAKS,
                 TASKS_NUMBER,
-                HOW_LONG
+                HOW_LONG,
+                MAX_ITERATIONS
         );
         before();
+        long start = System.currentTimeMillis();
         ArrayList<Schedule> subpopulation = new ArrayList<>();
         while (shouldProceed()) {
             while (subpopulation.size() < 8 * kPopulationSize) {
@@ -96,6 +106,7 @@ public class Main {
             }
             subpopulation.clear();
         }
+        long end = System.currentTimeMillis();
         int min = schedules.get(0).getTime();
         for (Schedule schedule : schedules) {
             if (schedule.getTime() < min) {
@@ -107,7 +118,8 @@ public class Main {
         try {
             writer = new FileWriter(new File(INSTANCE_FILENAME + "results.txt"), true);
             writer
-                    .append(min + "")
+                    .append(min + " ")
+                    .append(end - start + "")
                     .append(System.lineSeparator());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -145,7 +157,7 @@ public class Main {
     static void laduj() {
         BufferedReader reader = null;
         try {
-            File file = new File(GEN + ".txt");
+            File file = new File(GEN_FILENAME);
             reader = new BufferedReader(new FileReader(file));
             String line1;
             Job up;
@@ -187,7 +199,7 @@ public class Main {
         FileOutputStream fos = null;
         ArrayList<Schedule> list = null;
         try {
-            fos = new FileOutputStream(GEN + ".txt");
+            fos = new FileOutputStream(GEN_FILENAME);
             PrintStream printStream = new PrintStream(fos);
             list = new ArrayList<>();
             for (int i = 0; i < kPopulationSize; i++) {
@@ -275,7 +287,9 @@ public class Main {
 
     static boolean shouldProceed() {
         numPasses++;
-        return time + (HOW_LONG * 1000) > Calendar.getInstance().getTimeInMillis();
+        return HOW_LONG > 0
+                ? time + (HOW_LONG * 1000) > Calendar.getInstance().getTimeInMillis()
+                : numPasses < MAX_ITERATIONS;
     }
 
     static Schedule[] getParents(List<Schedule> subpopulation) {
